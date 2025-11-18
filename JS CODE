@@ -1,0 +1,92 @@
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const tempVal = document.getElementById('tempVal');
+const humVal  = document.getElementById('humVal');
+const soilVal = document.getElementById('soilVal');
+const ecoTip  = document.getElementById('ecoTip');
+const lastUpdated = document.getElementById('lastUpdated');
+const pumpToggle = document.getElementById('pumpToggle');
+const pumpStateDisplay = document.getElementById('pumpState');
+
+const sensorRef = ref(db, 'SensorData');
+const pumpRef = ref(db, 'PumpControl/pump');
+
+function fmt(num, suffix=''){
+  if (num === null || num === undefined || Number.isNaN(num)) return '--' + suffix;
+  return (Math.round(num*10)/10).toFixed(1) + suffix;
+}
+
+function generateEcoTip(soil, humidity, temperature){
+  if (soil === null || soil === undefined) {
+    return "Soil data not available. Check sensor connection.";
+  }
+  if (soil < 30) {
+    return "💧 Soil is dry! Consider watering using drip irrigation and mulch the soil to reduce evaporation.";
+  } else if (humidity !== null && humidity !== undefined && humidity > 80) {
+    return "🌿 High humidity — increase ventilation and inspect for fungal diseases. Use neem-based sprays if needed.";
+  } else if (temperature !== null && temperature !== undefined && temperature > 35) {
+    return "🌞 High temperature — provide shade nets or mulch to protect young plants.";
+  } else {
+    return "✅ Conditions are healthy. Keep using organic compost and rotate crops seasonally.";
+  }
+}
+
+function updateLastUpdated(){
+  const now = new Date();
+  const formatted = now.getFullYear() + '-' +
+                    String(now.getMonth()+1).padStart(2,'0') + '-' +
+                    String(now.getDate()).padStart(2,'0') + ' ' +
+                    String(now.getHours()).padStart(2,'0') + ':' +
+                    String(now.getMinutes()).padStart(2,'0') + ':' +
+                    String(now.getSeconds()).padStart(2,'0');
+  lastUpdated.textContent = 'Last updated: ' + formatted;
+}
+onValue(sensorRef, (snapshot) => {
+  const val = snapshot.val();
+  const temperature = val && val.temperature !== undefined ? Number(val.temperature) : null;
+  const humidity = val && val.humidity !== undefined ? Number(val.humidity) : null;
+  const soil = val && (val.soilMoisture !== undefined ? Number(val.soilMoisture) : (val.soil !== undefined ? Number(val.soil) : null));
+
+  tempVal.textContent = fmt(temperature, ' °C');
+  humVal.textContent  = fmt(humidity, ' %');
+  soilVal.textContent = fmt(soil, ' %');
+  ecoTip.textContent = generateEcoTip(soil, humidity, temperature);
+
+  updateLastUpdated();
+}, (error) => {
+  console.error('Sensor read failed:', error);
+  ecoTip.textContent = 'Error reading sensor data.';
+});
+onValue(pumpRef, (snapshot) => {
+  const v = snapshot.val();
+  const isOn = (v === true || v === 'true' || v === 1);
+  pumpToggle.checked = isOn;
+  pumpStateDisplay.textContent = isOn ? 'ON' : 'OFF';
+}, (error) => {
+  console.error('Pump status read failed:', error);
+});
+pumpToggle.addEventListener('change', (ev) => {
+  const newVal = pumpToggle.checked;
+  set(pumpRef, newVal)
+    .then(() => {
+      pumpStateDisplay.textContent = newVal ? 'ON' : 'OFF';
+      updateLastUpdated();
+      console.log('Pump set to', newVal);
+    })
+    .catch((err) => {
+      console.error('Failed to update pump:', err);
+      alert('Failed to update pump: ' + err.message);
+    });
+});
