@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GreenFarm Dashboard (Web)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🌿 GreenFarm Dashboard</h1>
+
+    <div class="grid">
+      <div class="card">
+        <div class="sensor-label">🌡 Temperature</div>
+        <div id="tempVal" class="sensor-value">-- °C</div>
+      </div>
+
+      <div class="card">
+        <div class="sensor-label">💧 Humidity</div>
+        <div id="humVal" class="sensor-value">-- %</div>
+      </div>
+
+      <div class="card">
+        <div class="sensor-label">🌱 Soil Moisture</div>
+        <div id="soilVal" class="sensor-value">-- %</div>
+      </div>
+
+      <div class="card pump-row">
+        <div style="flex:1">
+          <div class="sensor-label">Irrigation Pump</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:8px;">
+            <div id="pumpState" class="sensor-value">--</div>
+            <div class="pump-switch">
+              <label class="switch">
+                <input id="pumpToggle" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="grid-column:1 / -1">
+        <div class="sensor-label">Eco Tip</div>
+        <div id="ecoTip" class="eco-tip">Loading tips...</div>
+      </div>
+    </div>
+
+    <div class="updated" id="lastUpdated">Last updated: --</div>
+
+    <footer>
+      Replace <strong>firebaseConfig</strong> in <code>app.js</code> with your Firebase project's credentials.
+      Firebase Realtime Database paths used: <code>/SensorData</code> and <code>/PumpControl/pump</code>.
+    </footer>
+  </div>
+
+  <!-- load app script (module so we can use modern imports if needed) -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
