@@ -1,0 +1,105 @@
+:root{
+  --bg:#f6fbf6;
+  --card:#ffffff;
+  --accent:#2e7d32;
+  --muted:#6b6b6b;
+  --success:#2e7d32;
+}
+body{
+  margin:0;
+  font-family: Inter, Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, #f6fbf6 0%, #eef7ee 100%);
+  color: #1b1b1b;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:24px;
+}
+.container{
+  max-width:760px;
+  margin:0 auto;
+}
+h1{
+  margin:0 0 10px 0;
+  color:var(--accent);
+  font-size:22px;
+  text-align:center;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:18px;
+}
+@media(min-width:720px){
+  .grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.card{
+  background:var(--card);
+  border-radius:12px;
+  padding:14px;
+  box-shadow: 0 4px 12px rgba(20,20,20,0.04);
+}
+.sensor-label{ font-size:15px; color:var(--muted); }
+.sensor-value{ font-weight:700; font-size:18px; margin-top:8px; }
+.pump-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.pump-switch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.eco-tip{
+  background: linear-gradient(90deg, rgba(46,125,50,0.08), rgba(46,125,50,0.03));
+  border-radius:10px;
+  padding:12px;
+  font-size:15px;
+  color:#1b1b1b;
+}
+.updated{
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+}
+/* Toggle style */
+.switch {
+  position: relative;
+  display:inline-block;
+  width:54px;
+  height:30px;
+}
+.switch input { display:none; }
+.slider {
+  position:absolute; cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background:#d8e8d8;
+  transition:.25s;
+  border-radius:999px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+}
+.slider:before{
+  position:absolute;
+  content:"";
+  height:24px;
+  width:24px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:.25s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+input:checked + .slider {
+  background: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+.center{ text-align:center; }
+footer{ margin-top:20px; font-size:13px; color:var(--muted); text-align:center; }
